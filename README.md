@@ -1,4 +1,3 @@
-# Bank_Term_Deposit
 <h1> Bank Term Deposit </h1>
 <h2><strong> 1. About </strong></h2>
 This is a classification problem in machine learning where a Portuguese bank is trying to be able to predict which customers will open a bank term deposit or not.
