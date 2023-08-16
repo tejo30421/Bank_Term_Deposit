@@ -2,7 +2,7 @@
 <h2><strong> 1. About </strong></h2>
 This is a classification problem in machine learning where a Portuguese bank is trying to be able to predict which customers will open a bank term deposit or not.
 <h2><strong> 2. Installations </strong></h2>
-git clone ("  ") <br />
+git clone ("https://github.com/tejo30421/Bank_Term_Deposit.git") <br />
 Clone this repostitory
 <h2><strong> 3. Requirements </strong></h2>
 The software used is Python==3.11 <br />
