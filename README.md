@@ -13,5 +13,7 @@ pandas==2.0.2 <br />
 Matplotlib==3.7.1 <br />
 Seaborn==0.12.2 <br />
 Scikit-learn==1.3.0 <br />
+imbalanced-learn==0.11.0 <br />
+xgboost==1.7.6 <br />
 <h2><strong> 5. GitClone </strong></h2>
 Clone the repositories and you can make the changes where you need.
