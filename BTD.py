@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-# In[1]:
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -18,56 +15,24 @@ from sklearn.metrics import confusion_matrix
 from imblearn.over_sampling import RandomOverSampler
 from sklearn.datasets import make_classification
 
-
-# In[2]:
-
-
 url='bank-additional-full.csv'
 urln='bank-additional-names.txt'
-
-
-# In[3]:
-
 
 btd = pd.read_csv(url, delimiter = ';')
 btd
 
-
-# In[4]:
-
-
 btd = btd.drop(['day_of_week'], axis=1)
-
-
-# In[5]:
-
 
 for col in btd.select_dtypes(include='object').columns:
     print(col)
     print(btd[col].unique())
 
-
-# In[6]:
-
-
 btd1=btd.rename(columns={"y": "subscribe"})
 btd1
 
-
-# In[7]:
-
-
 btd1['subscribe'] = btd1['subscribe'].replace({'no':0,'yes':1})
 
-
-# In[8]:
-
-
 btd1
-
-
-# In[9]:
-
 
 features_na = [features for features in btd1.columns if btd1[features].isnull().sum() > 0]
 for feature in features_na:
@@ -75,23 +40,11 @@ for feature in features_na:
 else:
     print("No missing value found")
 
-
-# In[10]:
-
-
 categorical_features=[feature for feature in btd1.columns if ((btd1[feature].dtypes=='O') & (feature not in ['subscribe']))]
 categorical_features
 
-
-# In[11]:
-
-
 for feature in categorical_features:
     print('The feature is {} and number of categories are {}'.format(feature,len(btd1[feature].unique())))
-
-
-# In[12]:
-
 
 plt.figure(figsize=(15,80))
 plotnumber =1
@@ -103,45 +56,21 @@ for categorical_feature in categorical_features:
     plotnumber+=1
 plt.show()
 
-
-# In[13]:
-
-
 btd1["default"].isna()
-
-
-# In[14]:
-
 
 numerical_features = [feature for feature in btd1.columns if ((btd1[feature].dtypes != 'O') & (feature not in ['subscribe']))]
 print('Number of numerical variables: ', len(numerical_features))
 
 btd1[numerical_features].head()
 
-
-# In[15]:
-
-
 discrete_feature=[feature for feature in numerical_features if len(btd1[feature].unique())<25]
 print("Discrete Variables Count: {}".format(len(discrete_feature)))
-
-
-# In[16]:
-
 
 for categorical_feature in categorical_features:
     print(btd1.groupby(['subscribe',categorical_feature]).size())
 
-
-# In[17]:
-
-
 continuous_features=[feature for feature in numerical_features if feature not in discrete_feature+['subscribe']]
 print("Continuous feature Count {}".format(len(continuous_features)))
-
-
-# In[18]:
-
 
 plt.figure(figsize=(20,60), facecolor='white')
 plotnumber =1
@@ -152,187 +81,78 @@ for feature in continuous_features:
     plotnumber+=1
 plt.show()
 
-
-# In[19]:
-
-
 sns.countplot(x='subscribe',data=btd1)
 plt.show()
 
-
-# In[20]:
-
-
 btd1['subscribe'].groupby(btd1['subscribe']).count()
 
-
-# In[21]:
-
-
 btd1.groupby(['subscribe','default']).size()
-
-
-# In[22]:
-
 
 btd1.drop(['default'],axis=1, inplace=True)
 btd1.groupby(['subscribe','pdays']).size()
 
-
-# In[23]:
-
-
 btd1.groupby(['subscribe','duration'],sort=True)['duration'].count()
 btd1.groupby(['subscribe','campaign'],sort=True)['campaign'].count()
-
-
-# In[24]:
-
 
 # excluding outliers
 btd2 = btd1[btd1['campaign'] < 33]
 btd2.groupby(['subscribe','campaign'],sort=True)['campaign'].count()
 
-
-# In[25]:
-
-
 cat_columns = ['job', 'marital', 'education', 'contact', 'month', 'poutcome']
 for col in  cat_columns:
     btd2 = pd.concat([btd2.drop(col, axis=1),pd.get_dummies(btd2[col], prefix=col, prefix_sep='_',drop_first=True, dummy_na=False)], axis=1)
 
-
-# In[26]:
-
-
 btd2['housing'] = btd2['housing'].map({'yes': 1, 'no': 0})
 btd2['housing']=btd2['housing'].replace({'unknown' :np.NaN})
 
-
-# In[27]:
-
-
 btd2.replace({True: 1, False: 0})
-
-
-# In[28]:
-
 
 btd2['loan'] = btd2['loan'].map({'yes': 1, 'no': 0})
 btd2['loan']=btd2['loan'].replace({'unknown' :np.NaN})
 
-
-# In[29]:
-
-
 btd2
-
-
-# In[30]:
-
 
 btd2.dropna(subset=['housing'], inplace=True)
 btd2.dropna(subset=['loan'], inplace=True)
 
-
-# In[31]:
-
-
 btd2
 
-
-# In[32]:
-
-
 btd2.isnull().sum().sum()
-
-
-# In[33]:
-
 
 for col in btd2.select_dtypes(include='float').columns:
     print(col)
     print(btd2[col].unique())
 
-
-# In[34]:
-
-
 btd2.head().replace({True: 1, False: 0})
-
-
-# In[35]:
-
 
 X = btd2.drop(['subscribe'],axis=1)
 y = btd2['subscribe']
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.3, random_state=0)
 
-
-# In[36]:
-
-
 y.value_counts().plot.pie(autopct='%.2f')
-
-
-# In[37]:
-
 
 len(X_train)
 
-
-# In[38]:
-
-
 len(X_test)
 
-
-# # OverSampling
-
-# In[39]:
-
-
+# OverSampling
 from imblearn.combine import SMOTETomek
 smk = SMOTETomek(random_state=42, sampling_strategy= 0.7)
 X_res,y_res=smk.fit_resample(X,y)
 ax = y_res.value_counts().plot.pie(autopct = '%.2f')
 
-
-# In[40]:
-
-
 X_res.shape,y_res.shape
-
-
-# In[41]:
-
 
 from collections import Counter
 print('Original dataset shape {}'.format(Counter(y)))
 print('Resampled dataset shape {}'.format(Counter(y_res)))
 
-
-# In[42]:
-
-
 os =  RandomOverSampler(random_state=42)
 X_train_res, y_train_res = os.fit_resample(X,y)
 
-
-# In[43]:
-
-
 X_train_res.shape, y_train_res.shape
 
-
-# In[44]:
-
-
 y_res.value_counts()
-
-
-# In[45]:
-
 
 # Slicing the data into 5 parts and showing mean value
 from sklearn.model_selection import cross_val_score
@@ -340,27 +160,15 @@ model_score =cross_val_score(estimator=RandomForestClassifier(),X=X_train_res, y
 print(model_score)
 print(model_score.mean())
 
-
-# In[46]:
-
-
 from sklearn.preprocessing import LabelEncoder
 le = LabelEncoder()
 y_train_res = le.fit_transform(y_train_res)
-
-
-# In[47]:
-
 
 # slicing for XGBClassifier algorithm
 from xgboost import XGBClassifier
 model_score =cross_val_score(estimator=XGBClassifier(),X=X_train_res, y=y_train_res, cv=5)
 print(model_score)
 print(model_score.mean())
-
-
-# In[48]:
-
 
 # to get best parameters, performing hyperparameter technique for gridsearchcv
 model_param = {
@@ -383,10 +191,6 @@ model_param = {
     }
 }
 
-
-# In[49]:
-
-
 # gridsearch for best parameters
 x_train,x_test,y_train,y_test = train_test_split(X,y, test_size=0.3, random_state=42, stratify=y)
 rfc = RandomForestClassifier()
@@ -401,10 +205,6 @@ grid_search_model = GridSearchCV(rfc, param_grid=param_grid)
 grid_search_model.fit(x_train, y_train)
 
 print('Best Parameters are:',grid_search_model.best_params_)
-
-
-# In[50]:
-
 
 from sklearn.metrics import roc_auc_score ,mean_squared_error,accuracy_score,classification_report,roc_curve,confusion_matrix
 
@@ -423,27 +223,11 @@ plt.ylabel('TPR')
 plt.title('ROC curve')
 plt.show()
 
-
-# In[51]:
-
-
 model_xgb = XGBClassifier(objective='binary:logistic',learning_rate=0.1,max_depth=10,n_estimators=100)
-
-
-# In[52]:
-
 
 model_xgb.fit(X_train_res,y_train_res)
 
-
-# In[53]:
-
-
 model_xgb.score(X_res,y_res)
-
-
-# In[54]:
-
 
 X_train_res, X_res, y_train_res, y_test_res = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
 rfc = RandomForestClassifier(random_state=42)
@@ -453,20 +237,11 @@ rfc_importances = pd.Series(rfc.feature_importances_, index=X.columns).sort_valu
 rfc_importances.plot(kind='bar')
 plt.show()
 
-
-# In[55]:
-
-
 from sklearn.metrics import confusion_matrix
 cm = confusion_matrix(y_train_res,model_xgb.predict(X_train_res))
 cm
-
-
-# In[56]:
-
 
 sns.heatmap(cm, annot=True, fmt='d')
 plt.xlabel('Predicted')
 plt.ylabel('True Value')
 plt.show()
-
