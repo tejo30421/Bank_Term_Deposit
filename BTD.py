@@ -139,7 +139,8 @@ len(X_test)
 from imblearn.combine import SMOTETomek
 smk = SMOTETomek(random_state=42, sampling_strategy= 0.7)
 X_res,y_res=smk.fit_resample(X,y)
-ax = y_res.value_counts().plot.pie(autopct = '%.2f')
+custom_colors = ['blue', 'green']
+ax = y_res.value_counts().plot.pie(autopct = '%1.5f%%', colors=custom_colors)
 
 X_res.shape,y_res.shape
 
